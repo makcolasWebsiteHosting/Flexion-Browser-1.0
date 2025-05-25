@@ -1,7 +1,8 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Flexion Browser</title>
   <style>
     * {
@@ -9,264 +10,452 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-    }body {
-  background-color: #0f0f1a;
-  color: #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
+    }
+    body {
+      background-color: #0f0f1a;
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-header {
-  background: #1a1a2e;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid #2e2e4f;
-}
+    header {
+      background: #1a1a2e;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #2e2e4f;
+    }
 
-header h1 {
-  font-size: 1.8rem;
-  color: #7f7fff;
-}
+    header h1 {
+      font-size: 1.8rem;
+      color: #7f7fff;
+    }
 
-.tab-bar {
-  display: flex;
-  background: #252542;
-  overflow-x: auto;
-  padding: 0.5rem;
-  border-bottom: 1px solid #333;
-}
+    .tab-bar {
+      display: flex;
+      background: #252542;
+      overflow-x: auto;
+      padding: 0.5rem;
+      border-bottom: 1px solid #333;
+    }
 
-.tab {
-  padding: 0.4rem 0.8rem;
-  margin-right: 0.5rem;
-  background: #3a3a5c;
-  border-radius: 5px;
-  color: #ccc;
-  cursor: pointer;
-}
+    .tab {
+      display: flex;
+      align-items: center;
+      padding: 0.4rem 0.8rem;
+      margin-right: 0.5rem;
+      background: #3a3a5c;
+      border-radius: 5px;
+      color: #ccc;
+      cursor: pointer;
+      user-select: none;
+    }
 
-.tab.active {
-  background: #7f7fff;
-  color: #fff;
-}
+    .tab.active {
+      background: #7f7fff;
+      color: #fff;
+    }
 
-.controls {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: #202035;
-  border-bottom: 2px solid #2e2e4f;
-  justify-content: center;
-  align-items: center;
-}
+    .tab img.favicon {
+      width: 16px;
+      height: 16px;
+      margin-right: 0.5rem;
+      border-radius: 3px;
+    }
 
-input[type="text"] {
-  width: 60%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: none;
-  background: #2e2e4f;
-  color: white;
-}
+    .tab .close-btn {
+      margin-left: 0.5rem;
+      font-weight: bold;
+      color: #ccc;
+      cursor: pointer;
+      user-select: none;
+    }
 
-button {
-  padding: 0.5rem 1rem;
-  background: #7f7fff;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s;
-}
+    .tab .close-btn:hover {
+      color: #fff;
+    }
 
-button:hover {
-  background: #6a6adf;
-}
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: #202035;
+      border-bottom: 2px solid #2e2e4f;
+      justify-content: center;
+      align-items: center;
+    }
 
-main {
-  flex: 1;
-  position: relative;
-}
+    input[type="text"] {
+      width: 60%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      background: #2e2e4f;
+      color: white;
+    }
 
-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: none;
-}
+    button {
+      padding: 0.5rem 1rem;
+      background: #7f7fff;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-iframe.active {
-  display: block;
-}
+    button:hover {
+      background: #6a6adf;
+    }
 
-.side-panels {
-  display: flex;
-  background: #161625;
-  padding: 1rem;
-  gap: 2rem;
-  height: 25vh;
-  overflow-y: auto;
-}
+    main {
+      flex: 1;
+      position: relative;
+    }
 
-.panel {
-  flex: 1;
-}
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
 
-.panel-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #b0b0ff;
-}
+    iframe.active {
+      display: block;
+    }
 
-.panel-item {
-  margin-bottom: 0.3rem;
-  cursor: pointer;
-  color: #bfbfff;
-  word-break: break-all;
-}
+    .side-panels {
+      display: flex;
+      background: #161625;
+      padding: 1rem;
+      gap: 2rem;
+      height: 25vh;
+      overflow-y: auto;
+    }
 
+    .panel {
+      flex: 1;
+    }
+
+    .panel-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #b0b0ff;
+    }
+
+    .panel-item {
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+      color: #bfbfff;
+      word-break: break-all;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Flexion Browser</h1>
-    <button onclick="addTab()">+ New Tab</button>
-  </header>  <div class="tab-bar" id="tabBar"></div>  <div class="controls">
-    <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://example.com)" />
-    <button onclick="navigate()">Go</button>
-    <button onclick="addBookmark()">Add Bookmark</button>
-  </div>  <main id="mainContent"></main>  <div class="side-panels">
-    <div class="panel">
+  </header>
+
+  <div class="tab-bar" id="tabBar"></div>
+
+  <div class="controls">
+    <input type="text" id="urlInput" placeholder="Enter URL and press Enter" />
+    <button id="addBookmarkBtn">Add Bookmark</button>
+    <button id="visitScratchBtn">Visit Scratch GUI</button>
+  </div>
+
+  <main id="mainContent"></main>
+
+  <div class="side-panels">
+    <div class="panel" id="bookmarksPanel">
       <div class="panel-title">Bookmarks</div>
-      <div id="bookmarks"></div>
+      <div id="bookmarksList"></div>
     </div>
-    <div class="panel">
+    <div class="panel" id="historyPanel">
       <div class="panel-title">History</div>
-      <div id="history"></div>
+      <div id="historyList"></div>
     </div>
-  </div>  <script>
-    let tabs = [];
-    let activeTab = 0;
+  </div>
+
+  <script>
+    // IndexedDB wrapper
+    const dbName = 'FlexionBrowserDB';
+    const dbVersion = 1;
     let db;
 
-    function initDB() {
-      const request = indexedDB.open('FlexionBrowserDB', 1);
-
-      request.onupgradeneeded = (e) => {
-        db = e.target.result;
-        db.createObjectStore('history', { keyPath: 'id', autoIncrement: true });
-        db.createObjectStore('bookmarks', { keyPath: 'url' });
-      };
-
-      request.onsuccess = (e) => {
-        db = e.target.result;
-        renderBookmarks();
-        renderHistory();
-      };
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, dbVersion);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          db = request.result;
+          resolve(db);
+        };
+        request.onupgradeneeded = (e) => {
+          db = e.target.result;
+          if (!db.objectStoreNames.contains('bookmarks')) {
+            db.createObjectStore('bookmarks', { keyPath: 'url' });
+          }
+          if (!db.objectStoreNames.contains('history')) {
+            db.createObjectStore('history', { autoIncrement: true });
+          }
+        };
+      });
     }
 
-    function addTab() {
-      const iframe = document.createElement('iframe');
-      document.getElementById('mainContent').appendChild(iframe);
-      tabs.push({ iframe });
-      activeTab = tabs.length - 1;
-      switchTab(activeTab);
-      renderTabs();
+    async function addBookmark(bookmark) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('bookmarks', 'readwrite');
+        const store = tx.objectStore('bookmarks');
+        store.put(bookmark);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
     }
 
+    async function getBookmarks() {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('bookmarks', 'readonly');
+        const store = tx.objectStore('bookmarks');
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function addHistory(url) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('history', 'readwrite');
+        const store = tx.objectStore('history');
+        store.add({ url, time: Date.now() });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function getHistory() {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('history', 'readonly');
+        const store = tx.objectStore('history');
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result.reverse());
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // Tab management
+    let tabs = [];
+    let activeTabId = null;
+
+    const tabBar = document.getElementById('tabBar');
+    const mainContent = document.getElementById('mainContent');
+    const urlInput = document.getElementById('urlInput');
+    const bookmarksList = document.getElementById('bookmarksList');
+    const historyList = document.getElementById('historyList');
+    const addBookmarkBtn = document.getElementById('addBookmarkBtn');
+    const visitScratchBtn = document.getElementById('visitScratchBtn');
+
+    // Create tab element with favicon and close button
+    function createTabElement(tab) {
+      const tabEl = document.createElement('div');
+      tabEl.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
+      tabEl.dataset.id = tab.id;
+
+      // Favicon img
+      const favicon = document.createElement('img');
+      favicon.className = 'favicon';
+      favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}`;
+      favicon.alt = '';
+      tabEl.appendChild(favicon);
+
+      // Tab title text
+      const titleText = document.createElement('span');
+      titleText.textContent = tab.title || tab.url;
+      tabEl.appendChild(titleText);
+
+      // Close button
+      const closeBtn = document.createElement('span');
+      closeBtn.className = 'close-btn';
+      closeBtn.textContent = '×';
+      closeBtn.title = 'Close tab';
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        closeTab(tab.id);
+      };
+      tabEl.appendChild(closeBtn);
+
+      tabEl.onclick = () => switchTab(tab.id);
+
+      return tabEl;
+    }
+
+    // Render all tabs
     function renderTabs() {
-      const tabBar = document.getElementById('tabBar');
       tabBar.innerHTML = '';
-      tabs.forEach((tab, i) => {
-        const el = document.createElement('div');
-        el.className = 'tab' + (i === activeTab ? ' active' : '');
-        el.textContent = 'Tab ' + (i + 1);
-        el.onclick = () => switchTab(i);
-        tabBar.appendChild(el);
+      tabs.forEach(tab => {
+        const tabEl = createTabElement(tab);
+        tabBar.appendChild(tabEl);
       });
     }
 
-    function switchTab(index) {
-      activeTab = index;
-      document.querySelectorAll('iframe').forEach((f, i) => {
-        f.classList.toggle('active', i === activeTab);
+    // Render iframes
+    function renderIframes() {
+      mainContent.innerHTML = '';
+      tabs.forEach(tab => {
+        const iframe = document.createElement('iframe');
+        iframe.src = tab.url;
+        iframe.className = tab.id === activeTabId ? 'active' : '';
+        iframe.dataset.id = tab.id;
+        mainContent.appendChild(iframe);
       });
+    }
+
+    // Switch tab without reloading iframe
+    function switchTab(id) {
+      if (activeTabId === id) return;
+      activeTabId = id;
       renderTabs();
+      updateIframesVisibility();
+      const activeTab = tabs.find(t => t.id === id);
+      if (activeTab) {
+        urlInput.value = activeTab.url;
+      }
     }
 
-    function navigate() {
-      const input = document.getElementById('urlInput');
-      let url = input.value;
-      if (!url.startsWith('http')) url = 'https://' + url;
-      const tab = tabs[activeTab];
-      tab.iframe.src = url;
-      tab.iframe.classList.add('active');
-      storeHistory(url);
+    // Update iframe visibility without removing them
+    function updateIframesVisibility() {
+      document.querySelectorAll('iframe').forEach(iframe => {
+        iframe.classList.toggle('active', iframe.dataset.id == activeTabId);
+      });
     }
 
-    function storeHistory(url) {
-      const tx = db.transaction('history', 'readwrite');
-      tx.objectStore('history').add({ url, timestamp: Date.now() });
-      tx.oncomplete = renderHistory;
+    // Close a tab
+    function closeTab(id) {
+      const tabIndex = tabs.findIndex(t => t.id === id);
+      if (tabIndex === -1) return;
+
+      tabs.splice(tabIndex, 1);
+
+      // If closing active tab, switch to another tab
+      if (activeTabId === id) {
+        if (tabs.length > 0) {
+          const newActive = tabs[Math.max(tabIndex - 1, 0)];
+          activeTabId = newActive.id;
+        } else {
+          activeTabId = null;
+          urlInput.value = '';
+        }
+      }
+      renderTabs();
+      renderIframes();
+      updateIframesVisibility();
     }
 
-    function addBookmark() {
-      const input = document.getElementById('urlInput');
-      let url = input.value;
-      if (!url.startsWith('http')) url = 'https://' + url;
-      const tx = db.transaction('bookmarks', 'readwrite');
-      tx.objectStore('bookmarks').put({ url });
-      tx.oncomplete = renderBookmarks;
+    // Add new tab
+    function addTab(url) {
+      const id = Date.now().toString();
+      const tab = { id, url, title: url };
+      tabs.push(tab);
+      activeTabId = id;
+      renderTabs();
+      renderIframes();
+      updateIframesVisibility();
+      urlInput.value = url;
+
+      // Add to history
+      addHistory(url);
+      loadBookmarks();
+      loadHistory();
     }
 
-    function renderHistory() {
-      const tx = db.transaction('history', 'readonly');
-      const store = tx.objectStore('history');
-      const request = store.getAll();
-      request.onsuccess = () => {
-        const historyEl = document.getElementById('history');
-        historyEl.innerHTML = '';
-        request.result.reverse().forEach(({ url }) => {
-          const item = document.createElement('div');
-          item.className = 'panel-item';
-          item.textContent = url;
-          item.onclick = () => {
-            document.getElementById('urlInput').value = url;
-            navigate();
-          };
-          historyEl.appendChild(item);
-        });
-      };
+    // Load bookmarks from DB and render
+    async function loadBookmarks() {
+      const bookmarks = await getBookmarks();
+      bookmarksList.innerHTML = '';
+      bookmarks.forEach(bm => {
+        const div = document.createElement('div');
+        div.className = 'panel-item';
+        div.textContent = bm.title || bm.url;
+        div.title = bm.url;
+        div.onclick = () => {
+          addTab(bm.url);
+        };
+        bookmarksList.appendChild(div);
+      });
     }
 
-    function renderBookmarks() {
-      const tx = db.transaction('bookmarks', 'readonly');
-      const store = tx.objectStore('bookmarks');
-      const request = store.getAll();
-      request.onsuccess = () => {
-        const bookmarksEl = document.getElementById('bookmarks');
-        bookmarksEl.innerHTML = '';
-        request.result.forEach(({ url }) => {
-          const item = document.createElement('div');
-          item.className = 'panel-item';
-          item.textContent = url;
-          item.onclick = () => {
-            document.getElementById('urlInput').value = url;
-            navigate();
-          };
-          bookmarksEl.appendChild(item);
-        });
-      };
+    // Load history from DB and render
+    async function loadHistory() {
+      const history = await getHistory();
+      historyList.innerHTML = '';
+      history.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'panel-item';
+        div.textContent = entry.url;
+        div.title = new Date(entry.time).toLocaleString();
+        div.onclick = () => {
+          addTab(entry.url);
+        };
+        historyList.appendChild(div);
+      });
     }
 
-    initDB();
-    addTab();
-  </script></body>
+    // Add bookmark button handler
+    addBookmarkBtn.onclick = async () => {
+      if (!activeTabId) return alert('No active tab to bookmark');
+      const tab = tabs.find(t => t.id === activeTabId);
+      if (!tab) return;
+      await addBookmark({ url: tab.url, title: tab.title });
+      loadBookmarks();
+      alert('Bookmark added!');
+    };
+
+    // Visit Scratch GUI button
+    visitScratchBtn.onclick = () => {
+      addTab('https://machinelearningforkids.co.uk/scratch/');
+    };
+
+    // Handle URL enter in input
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        let url = urlInput.value.trim();
+        if (!url) return;
+        if (!/^https?:\/\//i.test(url)) {
+          url = 'https://' + url;
+        }
+        const activeTab = tabs.find(t => t.id === activeTabId);
+        if (activeTab) {
+          activeTab.url = url;
+          activeTab.title = url;
+          // Update iframe src without recreating
+          const iframe = document.querySelector(`iframe[data-id="${activeTabId}"]`);
+          if (iframe) {
+            iframe.src = url;
+          }
+          urlInput.value = url;
+          addHistory(url);
+          loadHistory();
+        } else {
+          addTab(url);
+        }
+        renderTabs();
+      }
+    });
+
+    // Initialize DB and UI
+    openDB().then(() => {
+      loadBookmarks();
+      loadHistory();
+      // Start with one tab
+      addTab('https://www.example.com');
+    });
+
+  </script>
+</body>
 </html>

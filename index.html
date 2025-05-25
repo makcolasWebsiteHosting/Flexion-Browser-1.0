@@ -1,0 +1,272 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flexion Browser</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }body {
+  background-color: #0f0f1a;
+  color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  background: #1a1a2e;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #2e2e4f;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  color: #7f7fff;
+}
+
+.tab-bar {
+  display: flex;
+  background: #252542;
+  overflow-x: auto;
+  padding: 0.5rem;
+  border-bottom: 1px solid #333;
+}
+
+.tab {
+  padding: 0.4rem 0.8rem;
+  margin-right: 0.5rem;
+  background: #3a3a5c;
+  border-radius: 5px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #7f7fff;
+  color: #fff;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #202035;
+  border-bottom: 2px solid #2e2e4f;
+  justify-content: center;
+  align-items: center;
+}
+
+input[type="text"] {
+  width: 60%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  background: #2e2e4f;
+  color: white;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background: #7f7fff;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #6a6adf;
+}
+
+main {
+  flex: 1;
+  position: relative;
+}
+
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+}
+
+iframe.active {
+  display: block;
+}
+
+.side-panels {
+  display: flex;
+  background: #161625;
+  padding: 1rem;
+  gap: 2rem;
+  height: 25vh;
+  overflow-y: auto;
+}
+
+.panel {
+  flex: 1;
+}
+
+.panel-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #b0b0ff;
+}
+
+.panel-item {
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  color: #bfbfff;
+  word-break: break-all;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Flexion Browser</h1>
+    <button onclick="addTab()">+ New Tab</button>
+  </header>  <div class="tab-bar" id="tabBar"></div>  <div class="controls">
+    <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://example.com)" />
+    <button onclick="navigate()">Go</button>
+    <button onclick="addBookmark()">Add Bookmark</button>
+  </div>  <main id="mainContent"></main>  <div class="side-panels">
+    <div class="panel">
+      <div class="panel-title">Bookmarks</div>
+      <div id="bookmarks"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">History</div>
+      <div id="history"></div>
+    </div>
+  </div>  <script>
+    let tabs = [];
+    let activeTab = 0;
+    let db;
+
+    function initDB() {
+      const request = indexedDB.open('FlexionBrowserDB', 1);
+
+      request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        db.createObjectStore('history', { keyPath: 'id', autoIncrement: true });
+        db.createObjectStore('bookmarks', { keyPath: 'url' });
+      };
+
+      request.onsuccess = (e) => {
+        db = e.target.result;
+        renderBookmarks();
+        renderHistory();
+      };
+    }
+
+    function addTab() {
+      const iframe = document.createElement('iframe');
+      document.getElementById('mainContent').appendChild(iframe);
+      tabs.push({ iframe });
+      activeTab = tabs.length - 1;
+      switchTab(activeTab);
+      renderTabs();
+    }
+
+    function renderTabs() {
+      const tabBar = document.getElementById('tabBar');
+      tabBar.innerHTML = '';
+      tabs.forEach((tab, i) => {
+        const el = document.createElement('div');
+        el.className = 'tab' + (i === activeTab ? ' active' : '');
+        el.textContent = 'Tab ' + (i + 1);
+        el.onclick = () => switchTab(i);
+        tabBar.appendChild(el);
+      });
+    }
+
+    function switchTab(index) {
+      activeTab = index;
+      document.querySelectorAll('iframe').forEach((f, i) => {
+        f.classList.toggle('active', i === activeTab);
+      });
+      renderTabs();
+    }
+
+    function navigate() {
+      const input = document.getElementById('urlInput');
+      let url = input.value;
+      if (!url.startsWith('http')) url = 'https://' + url;
+      const tab = tabs[activeTab];
+      tab.iframe.src = url;
+      tab.iframe.classList.add('active');
+      storeHistory(url);
+    }
+
+    function storeHistory(url) {
+      const tx = db.transaction('history', 'readwrite');
+      tx.objectStore('history').add({ url, timestamp: Date.now() });
+      tx.oncomplete = renderHistory;
+    }
+
+    function addBookmark() {
+      const input = document.getElementById('urlInput');
+      let url = input.value;
+      if (!url.startsWith('http')) url = 'https://' + url;
+      const tx = db.transaction('bookmarks', 'readwrite');
+      tx.objectStore('bookmarks').put({ url });
+      tx.oncomplete = renderBookmarks;
+    }
+
+    function renderHistory() {
+      const tx = db.transaction('history', 'readonly');
+      const store = tx.objectStore('history');
+      const request = store.getAll();
+      request.onsuccess = () => {
+        const historyEl = document.getElementById('history');
+        historyEl.innerHTML = '';
+        request.result.reverse().forEach(({ url }) => {
+          const item = document.createElement('div');
+          item.className = 'panel-item';
+          item.textContent = url;
+          item.onclick = () => {
+            document.getElementById('urlInput').value = url;
+            navigate();
+          };
+          historyEl.appendChild(item);
+        });
+      };
+    }
+
+    function renderBookmarks() {
+      const tx = db.transaction('bookmarks', 'readonly');
+      const store = tx.objectStore('bookmarks');
+      const request = store.getAll();
+      request.onsuccess = () => {
+        const bookmarksEl = document.getElementById('bookmarks');
+        bookmarksEl.innerHTML = '';
+        request.result.forEach(({ url }) => {
+          const item = document.createElement('div');
+          item.className = 'panel-item';
+          item.textContent = url;
+          item.onclick = () => {
+            document.getElementById('urlInput').value = url;
+            navigate();
+          };
+          bookmarksEl.appendChild(item);
+        });
+      };
+    }
+
+    initDB();
+    addTab();
+  </script></body>
+</html>
